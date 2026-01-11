@@ -1,112 +1,208 @@
-# Trading API Wrapper – Bajaj Broking Assignment
+Trading Simulator (Personal Exploration Project)
 
-## Overview
-A simplified trading backend built with FastAPI that simulates core workflows of an online stock broking platform.  
-It exposes REST APIs for instruments, orders, trades, and portfolio, along with a lightweight Python SDK wrapper.
+This project is a personal stock trading simulator built to explore how real-world trading platforms work from a systems and engineering perspective.
 
-No real market connectivity is used.
+The focus is on:
 
-## Tech Stack
-- Python (FastAPI)
-- JSON APIs
-- In-memory storage
-- Python SDK using `requests`
+real-time market data flow
 
-## Setup & Run
+order execution logic
 
-git clone https://github.com/verma1039/trading-api-wrapper.git
+portfolio accounting
 
-cd trading-api-wrapper
+frontend–backend communication using REST and WebSockets
+
+No real money is involved.
+
+What this project does (current state)
+Real-time price streaming (infrastructure ready)
+
+Backend exposes a WebSocket endpoint:
+
+ws://localhost:8000/ws/prices
 
 
-python -m venv venv
+Frontend subscribes once and receives live updates
 
-venv\Scripts\activate
+Prices update continuously without polling
 
-pip install -r requirements.txt
+Market data source is currently placeholder/test-based
 
-python -m uvicorn app.main:app --reload
+Real market data integration is planned next
 
- ## Server runs at:
+Tradable instruments
 
-http://127.0.0.1:8000
+Backend maintains a list of tradable stocks (symbol, exchange, type)
 
-## Using Swagger UI (Primary Testing Tool)
+Instruments are fetched via REST:
 
-FastAPI automatically provides Swagger UI for interactive API testing.
-
-### Open Swagger UI
-
-http://127.0.0.1:8000/docs
-
-All available APIs are listed here and can be executed directly from the browser.
-
-## API Usage via Swagger UI
-
-1. Get Instruments
 GET /api/v1/instruments
-Click Try it out → Execute
 
-2. Place Order
+
+Frontend displays all available instruments
+
+Virtual order placement
+
+Supports:
+
+BUY orders
+
+SELL orders
+
+Orders are placed via REST:
+
 POST /api/v1/orders
-Click Try it out
-Replace the auto-generated schema with:
 
-{
-  "symbol": "TCS",
-  
-  "orderType": "BUY",
-  
-  "orderStyle": "MARKET",
-  
-  "quantity": 10
-}
 
-Click Execute
+Orders execute immediately using the current market price logic
 
-MARKET orders are executed immediately.
+No real funds are used
 
-3. Get Order Status
+Trades tracking
 
-GET /api/v1/orders/{orderId}
+Every executed order creates a trade
 
-Paste the orderId returned from the order placement response.
+Trades are stored in backend memory
 
-5. Get Trades
+Trade history is available via:
 
 GET /api/v1/trades
 
-Displays all executed trades in the current session.
+Portfolio state
 
-7. Get Portfolio
+Backend maintains a virtual portfolio
+
+Tracks holdings per symbol
+
+Portfolio updates automatically after trades
+
+Portfolio data available via:
 
 GET /api/v1/portfolio
 
-Displays current portfolio holdings based on executed buy orders.
+Frontend application
 
-## SDK Wrapper
-A Python SDK (sdk/trading_client.py) wraps the same REST APIs for programmatic usage.
+Built using React + Vite
 
-from sdk.trading_client import TradingClient
+Features:
 
-client = TradingClient()
+Instrument list
 
-client.get_instruments()
+Live price updates
 
-The SDK and Swagger UI both communicate with the same backend server.
+Buy / Sell interface
 
-## Assumptions
+Portfolio view
 
-1. Single mocked user
-2. Market orders execute immediately
-3. Limit orders remain in PLACED state
-4. In-memory data resets on server restart
+Trades history
 
-## Execution Flow
+Uses:
 
-Swagger UI / SDK → FastAPI Backend
+REST APIs for state-changing operations
 
-## Conclusion
-This project demonstrates REST API design, basic trading workflows, and a wrapper SDK as required by the assignment.
+WebSockets for real-time price updates
 
-Swagger UI is used as the primary interface for API exploration and testing.
+What this project is NOT (by design)
+
+Not a real trading platform
+
+No real money involved
+
+No authentication or user accounts
+
+No multi-user support
+
+No order book or matching engine
+
+No persistence (state is in-memory only)
+
+These exclusions are intentional to keep the focus on learning and exploration.
+
+Tech stack
+Backend
+
+Python
+
+FastAPI
+
+Uvicorn
+
+WebSockets
+
+In-memory data storage
+
+Frontend
+
+React
+
+Vite
+
+Axios
+
+Native WebSocket API
+
+Project structure (simplified)
+backend/
+ └── app/
+     ├── routes/        # REST & WebSocket endpoints
+     ├── services/      # Market data abstraction
+     ├── database.py    # In-memory state
+     └── main.py
+
+frontend/
+ └── src/
+     ├── api/           # REST clients
+     ├── hooks/         # WebSocket logic
+     ├── pages/         # UI screens
+     └── App.jsx
+
+How to run locally
+Backend
+cd backend
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app
+
+
+Backend runs at:
+
+http://localhost:8000
+
+Frontend
+cd frontend
+npm install
+npm run dev
+
+
+Frontend runs at:
+
+http://localhost:5173
+
+Planned next steps
+
+Integrate real stock prices (Yahoo Finance)
+
+Add virtual cash balance
+
+Enforce balance checks on BUY / SELL
+
+Portfolio PnL (realised & unrealised)
+
+Persistence using SQLite
+
+Market hours simulation
+
+Motivation
+
+This project is built for personal learning and exploration.
+
+The goal is to understand:
+
+how trading platforms behave
+
+how real-time systems are designed
+
+how prices, orders, trades, and portfolios interact over time
+
+It is intentionally kept simple and extensible.
