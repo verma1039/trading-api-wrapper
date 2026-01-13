@@ -1,28 +1,35 @@
-# backend/app/services/market_data.py
+import yfinance as yf
+from app.database import instruments
 
-import random
+_price_cache = {}
 
-# simple in-memory price store
-_prices = {
-    "AAPL": 170.0,
-    "MSFT": 330.0,
-    "GOOGL": 140.0,
-    "AMZN": 155.0,
-    "TSLA": 245.0,
-}
 
 def get_live_price(symbol: str) -> float:
-    """
-    Simulated live price.
-    Slight random movement on each call.
-    """
     symbol = symbol.upper()
 
-    if symbol not in _prices:
-        return 0.0
+    try:
+        ticker = yf.Ticker(symbol)
 
-    # simulate market movement
-    change = random.uniform(-0.5, 0.5)
-    _prices[symbol] = round(_prices[symbol] + change, 2)
+        # Most reliable fields (fallback chain)
+        price = (
+            ticker.fast_info.get("last_price")
+            or ticker.info.get("regularMarketPrice")
+            or ticker.info.get("currentPrice")
+        )
 
-    return _prices[symbol]
+        if price is None:
+            return _price_cache.get(symbol, 0.0)
+
+        price = float(price)
+
+        # update instrument reference
+        for inst in instruments:
+            if inst["symbol"] == symbol:
+                inst["lastTradedPrice"] = round(price, 2)
+                break
+
+        _price_cache[symbol] = price
+        return price
+
+    except Exception:
+        return _price_cache.get(symbol, 0.0)
