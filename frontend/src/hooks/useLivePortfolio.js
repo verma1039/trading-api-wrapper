@@ -9,12 +9,14 @@ export default function useLivePrices() {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const map = {};
-
-      data.forEach(item => {
-        map[item.symbol] = item.price;
+      data.forEach(p => {
+        map[p.symbol] = p.price;
       });
-
       setPrices(map);
+    };
+
+    ws.onerror = () => {
+      console.error("Price WebSocket error");
     };
 
     return () => ws.close();

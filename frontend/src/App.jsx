@@ -1,18 +1,18 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Instruments from "./pages/Instruments";
 import PlaceOrder from "./pages/PlaceOrder";
 import Portfolio from "./pages/Portfolio";
 import Trades from "./pages/Trades";
 
-function App() {
+export default function App() {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Trading Platform</h1>
-      <Instruments />
-      <PlaceOrder />
-      <Portfolio />
-      <Trades />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Instruments />} />
+        <Route path="/order" element={<PlaceOrder />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/trades" element={<Trades />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

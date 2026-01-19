@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.database import wallet, holdings
-from app.services.market_data import get_live_price
+from app.services.price_cache import get_price
 from app.db import SessionLocal
 from app.models import Holding, Trade, CashLedger
 
@@ -39,7 +39,7 @@ def place_order(order: OrderRequest):
     if side not in ("BUY", "SELL"):
         raise HTTPException(status_code=400, detail="side must be BUY or SELL")
 
-    price = get_live_price(symbol)
+    price = get_price(symbol)
     if price <= 0:
         raise HTTPException(status_code=400, detail="Price unavailable")
 

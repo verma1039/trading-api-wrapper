@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime
 from datetime import datetime
 from app.db import Base
-from sqlalchemy import Column, Integer, String, Float, DateTime
-from datetime import datetime
 
 class Wallet(Base):
     __tablename__ = "wallet"

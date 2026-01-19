@@ -1,25 +1,23 @@
 import { useEffect, useState } from "react";
-import { getTrades } from "../api/trades";
+import api from "../api/axios";
 
-function Trades() {
+export default function Trades() {
   const [trades, setTrades] = useState([]);
 
   useEffect(() => {
-    getTrades().then(res => setTrades(res.data));
+    api.get("/trades").then(res => setTrades(res.data.items));
   }, []);
 
   return (
     <div>
-      <h2>Trades</h2>
-      <ul>
-        {trades.map(t => (
-          <li key={t.tradeId}>
-            {t.side} {t.quantity} {t.symbol} @ {t.price.toFixed(2)}
-          </li>
-        ))}
-      </ul>
+      <h2>Trade History</h2>
+
+      {trades.map(t => (
+        <div key={t.tradeId}>
+          {t.timestamp} | {t.symbol} | {t.side} | Qty {t.quantity} |
+          Price {t.price} | PnL {t.realizedPnL}
+        </div>
+      ))}
     </div>
   );
 }
-
-export default Trades;

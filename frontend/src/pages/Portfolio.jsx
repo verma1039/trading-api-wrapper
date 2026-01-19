@@ -1,29 +1,55 @@
-import { useEffect, useState } from "react";
-import { getPortfolio } from "../api/portfolio";
+import useLivePortfolio from "../hooks/useLivePortfolio";
 
-function Portfolio() {
-  const [data, setData] = useState(null);
+export default function Portfolio() {
+  const portfolio = useLivePortfolio();
 
-  useEffect(() => {
-    getPortfolio().then(res => setData(res.data));
-  }, []);
+  if (!portfolio) {
+    return <p>Loading portfolio...</p>;
+  }
 
-  if (!data) return null;
+  const {
+    balance = 0,
+    totalInvested = 0,
+    totalCurrentValue = 0,
+    totalUnrealizedPnL = 0,
+    holdings = [],
+  } = portfolio;
 
   return (
     <div>
       <h2>Portfolio</h2>
-      <p>Balance: ₹{Math.round(data.balance)}</p>
 
-      <ul>
-        {Object.entries(data.holdings).map(([symbol, h]) => (
-          <li key={symbol}>
-            {symbol} — Qty: {h.quantity}, Avg: {h.avgPrice.toFixed(2)}
-          </li>
-        ))}
-      </ul>
+      <p>Balance: {balance.toFixed(2)}</p>
+      <p>Total Invested: {totalInvested.toFixed(2)}</p>
+      <p>Current Value: {totalCurrentValue.toFixed(2)}</p>
+      <p>Unrealized PnL: {totalUnrealizedPnL.toFixed(2)}</p>
+
+      {holdings.length === 0 ? (
+        <p>No holdings yet.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Qty</th>
+              <th>Avg Price</th>
+              <th>Live Price</th>
+              <th>Unrealized PnL</th>
+            </tr>
+          </thead>
+          <tbody>
+            {holdings.map(h => (
+              <tr key={h.symbol}>
+                <td>{h.symbol}</td>
+                <td>{h.quantity}</td>
+                <td>{Number(h.avgPrice).toFixed(2)}</td>
+                <td>{Number(h.livePrice).toFixed(2)}</td>
+                <td>{Number(h.unrealizedPnL).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
-
-export default Portfolio;

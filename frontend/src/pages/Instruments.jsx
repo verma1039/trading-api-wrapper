@@ -2,37 +2,40 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import useLivePrices from "../hooks/useLivePrices";
 
-function Instruments() {
+export default function Instruments() {
   const [items, setItems] = useState([]);
   const livePrices = useLivePrices();
 
   useEffect(() => {
-    api
-      .get("/instruments", { params: { page: 1, limit: 50 } })
-      .then(res => {
-        setItems(res.data.items || []);
-      })
-      .catch(() => {
-        setItems([]);
-      });
+    api.get("/instruments?limit=50").then(res => {
+      setItems(res.data.items);
+    });
   }, []);
 
   return (
     <div>
-      <h2>Instruments</h2>
+      <h2>Market Instruments</h2>
 
-      <ul>
-        {items.map(i => (
-          <li key={i.symbol}>
-            {i.symbol} — {i.exchange} —{" "}
-            {livePrices[i.symbol] !== undefined
-              ? livePrices[i.symbol]
-              : "—"}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Exchange</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(i => (
+            <tr key={i.symbol}>
+              <td>{i.symbol}</td>
+              <td>{i.exchange}</td>
+              <td>
+                {livePrices[i.symbol]?.toFixed(2) ?? "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
-
-export default Instruments;
