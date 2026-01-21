@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/axios";
 
 export default function PlaceOrder() {
+  const [instruments, setInstruments] = useState([]);
   const [symbol, setSymbol] = useState("");
   const [side, setSide] = useState("BUY");
   const [quantity, setQuantity] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    api.get("/instruments?limit=100")
+      .then(res => {
+        const items = res.data.items || [];
+        setInstruments(items);
+        if (items.length > 0) {
+          setSymbol(items[0].symbol);
+        }
+      })
+      .catch(err => console.error("Failed to fetch instruments", err));
+  }, []);
 
   const submitOrder = async (e) => {
     e.preventDefault();
@@ -27,7 +40,6 @@ export default function PlaceOrder() {
       });
 
       setResult(res.data);
-      setSymbol("");
       setQuantity("");
     } catch (err) {
       setResult({
@@ -40,17 +52,30 @@ export default function PlaceOrder() {
 
   return (
     <div className="card">
-      <h2 className="card-title">📈 Place Order</h2>
+      <h2 className="card-title">💵 Buy / Sell</h2>
 
       <form className="order-form" onSubmit={submitOrder}>
-        <input
-          type="text"
-          placeholder="Symbol (AAPL)"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-          autoComplete="off"
-          required
-        />
+        {instruments.length > 0 ? (
+          <select
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+          >
+            {instruments.map((inst) => (
+              <option key={inst.symbol} value={inst.symbol}>
+                {inst.symbol}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type="text"
+            placeholder="Symbol (AAPL)"
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+            autoComplete="off"
+            required
+          />
+        )}
 
         <select
           value={side}

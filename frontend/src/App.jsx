@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import Instruments from "./pages/Instruments";
 import Portfolio from "./pages/Portfolio";
 import Trades from "./pages/Trades";
-import Wallet from "./pages/Wallet";
+import PlaceOrder from "./pages/PlaceOrder";
 
 export default function App() {
   return (
@@ -28,8 +28,8 @@ export default function App() {
               Trades
             </NavLink>
 
-            <NavLink to="/wallet" className="nav-link">
-              Wallet
+            <NavLink to="/order" className="nav-link">
+              Buy / Sell
             </NavLink>
           </div>
         </nav>
@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/" element={<Instruments />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/trades" element={<Trades />} />
-            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/order" element={<PlaceOrder />} />
           </Routes>
         </main>
       </div>
